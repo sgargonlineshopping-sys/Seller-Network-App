@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Network • Working Wireframe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --primary: #2563eb;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .section-header {
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: -.025em;
+            color: #374151;
+        }
+
+        .unit-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .unit-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+        }
+        
+        .unit-card.selected {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .nav-active {
+            background-color: #f8fafc;
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        .status-pill {
+            font-size: 0.75rem;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            line-height: 1.2;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .table-header {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mock-data {
+            font-size: 0.875rem;
+        }
+        
+        .toast {
+            animation: slideUp 0.3s ease forwards;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .locked-badge {
+            background-color: #fef3c7;
+            color: #92400e;
+            font-size: 0.75rem;
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white border-b border-slate-200">
+        <div class="max-w-screen-2xl mx-auto">
+            <div class="px-8 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-x-3">
+                    <div class="flex items-center gap-x-2">
+                        <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-building text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <span class="font-display text-2xl font-semibold tracking-tighter">Seller</span>
+                            <span class="font-display text-2xl font-semibold tracking-tighter text-blue-600">Network</span>
+                        </div>
+                    </div>
+                    <div class="px-3 py-1.5 bg-slate-100 rounded-full text-xs font-medium flex items-center gap-x-1.5">
+                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <span class="text-slate-600">Production Wireframe v1</span>
+                    </div>
+                </div>
+
+                <!-- Role Switcher -->
+                <div class="flex items-center bg-slate-100 rounded-2xl p-1">
+                    <button onclick="switchRole('sales')" id="btn-sales"
+                            class="px-5 py-2 text-sm font-semibold rounded-xl flex items-center gap-x-2 transition-all nav-active">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>Sales Partner</span>
+                    </button>
+                    <button onclick="switchRole('admin')" id="btn-admin"
+                            class="px-5 py-2 text-sm font-semibold rounded-xl flex items-center gap-x-2 text-slate-600 hover:text-slate-900 transition-all">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Admin</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-x-3">
+                    <div class="flex items-center gap-x-2 text-sm">
+                        <div class="w-8 h-8 bg-slate-200 rounded-full overflow-hidden ring-2 ring-white">
+                            <img src="https://i.pravatar.cc/32?img=12" alt="User avatar">
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="font-semibold text-sm" id="user-name">Neo Sharma</div>
+                            <div class="text-[10px] text-slate-500 -mt-0.5" id="user-role">Sales Partner • Silver Tier</div>
+                        </div>
+                    </div>
+                    <button onclick="logout()" 
+                            class="text-slate-400 hover:text-slate-600 px-3 py-1.5 text-sm flex items-center gap-x-1">
+                        <i class="fa-solid fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SALES PARTNER VIEW -->
+    <div id="sales-view" class="max-w-screen-2xl mx-auto px-8 py-8">
+        <!-- Header -->
+        <div class="flex items-end justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-semibold tracking-tight">Good morning, Neo</h1>
+                <p class="text-slate-500 mt-1">Kanpur Gated Villas • 4 new leads this week</p>
+            </div>
+            <div class="flex items-center gap-x-3 text-sm">
+                <div class="bg-white border border-slate-200 rounded-2xl px-4 py-2 flex items-center gap-x-2">
+                    <i class="fa-solid fa-calendar text-emerald-500"></i>
+                    <span class="font-medium">Today: <span class="font-semibold">11 Feb 2026</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-slate-200 mb-6">
+            <button onclick="showSalesTab('register')" id="tab-register"
+                    class="px-6 py-3 font-semibold border-b-2 border-blue-600 text-blue-600">Register New Lead</button>
+            <button onclick="showSalesTab('profile')" id="tab-profile"
+                    class="px-6 py-3 font-semibold text-slate-500 hover:text-slate-700">My Profile &amp; Incentives</button>
+        </div>
+
+        <!-- REGISTER NEW LEAD TAB -->
+        <div id="sales-register-tab">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Left Column: Project + Units -->
+                <div class="lg:col-span-7">
+                    <!-- Project Selection -->
+                    <div class="mb-4">
+                        <div class="section-header mb-2 flex items-center justify-between">
+                            <span>SELECT PROJECT</span>
+                        </div>
+                        <div onclick="selectProject(0)" class="cursor-pointer bg-white border border-blue-200 rounded-3xl p-5 flex items-center justify-between hover:border-blue-300 transition-colors">
+                            <div>
+                                <div class="font-semibold text-lg">Kanpur Gated Villas – Phase 1</div>
+                                <div class="text-sm text-slate-500">124 plots • 68 sold • RERA: UPRERAPRJ12345</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-emerald-600 text-sm font-semibold">72% sold</div>
+                                <div class="text-xs text-slate-400">2.4 acres</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Units Grid -->
+                    <div class="mb-2 flex items-center justify-between">
+                        <div class="section-header">AVAILABLE UNITS</div>
+                        <div class="text-xs text-slate-400">Click any unit to lock rate</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4" id="units-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Right Column: Customer + Rate Panel -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white border border-slate-200 rounded-3xl p-6 sticky top-6">
+                        <div class="section-header mb-4">CUSTOMER &amp; RATE DETAILS</div>
+                        
+                        <!-- Selected Unit Info -->
+                        <div id="selected-unit-panel" class="hidden mb-5 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="font-semibold text-lg" id="selected-unit-name"></div>
+                                    <div class="text-sm text-slate-500" id="selected-unit-size"></div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="locked-badge flex items-center gap-x-1">
+                                        <i class="fa-solid fa-lock text-amber-600 text-xs"></i>
+                                        <span>RATE LOCKED</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Customer Form -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs font-semibold text-slate-500 tracking-wider">CUSTOMER NAME</label>
+                                <input id="customer-name" type="text" placeholder="Full name" 
+                                       class="mt-1 w-full border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400">
+                            </div>
+                            
+                            <div>
+                                <label class="text-xs font-semibold text-slate-500 tracking-wider">PHONE NUMBER</label>
+                                <input id="customer-phone" type="tel" placeholder="+91 98XXXXXXXX" 
+                                       class="mt-1 w-full border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400">
+                            </div>
+
+                            <!-- Rate & Calculation Panel -->
+                            <div id="rate-panel" class="hidden pt-4 border-t border-slate-100">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <div class="text-xs text-slate-500">CURRENT RATE</div>
+                                        <div class="font-semibold text-xl" id="rate-value"></div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-slate-500">TOTAL SALE VALUE</div>
+                                        <div class="font-semibold text-xl" id="total-value"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-3 p-3 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-between">
+                                    <div>
+                                        <div class="text-xs text-emerald-700 font-medium">BOOKING AMOUNT (10%)</div>
+                                        <div class="font-bold text-emerald-700 text-xl" id="booking-amount"></div>
+                                    </div>
+                                    <i class="fa-solid fa-calculator text-emerald-600 text-xl"></i>
+                                </div>
+                            </div>
+
+                            <!-- Booking Amount (Customizable) -->
+                            <div id="booking-amount-section" class="hidden pt-4 border-t border-slate-100">
+                                <label class="text-xs font-semibold text-slate-500 tracking-wider">BOOKING / TOKEN AMOUNT (Custom)</label>
+                                <div class="mt-1 flex items-center gap-x-2">
+                                    <div class="flex-1">
+                                        <input id="booking-amount-input" type="number" 
+                                               class="w-full border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400"
+                                               placeholder="Enter custom amount or leave as 10%">
+                                    </div>
+                                    <button onclick="resetToTenPercent()" 
+                                            class="px-3 py-3 text-xs font-medium border border-slate-300 rounded-2xl hover:bg-slate-50 whitespace-nowrap">
+                                        Reset to 10%
+                                    </button>
+                                </div>
+                                <div class="text-[10px] text-emerald-600 mt-1">Default is 10% of total value. You can enter any amount.</div>
+                            </div>
+
+                            <!-- Optional Payment Details -->
+                            <div id="payment-section" class="hidden pt-4 border-t border-slate-100 space-y-3">
+                                <div class="text-xs font-semibold text-slate-500 tracking-wider mb-1">PAYMENT DETAILS (Optional)</div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="text-xs text-slate-500">Transaction Type</label>
+                                        <select id="txn-type" class="mt-1 w-full border border-slate-300 rounded-2xl px-3 py-2 text-sm">
+                                            <option>Cheque</option>
+                                            <option>RTGS / NEFT</option>
+                                            <option>DD</option>
+                                            <option>UPI</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-slate-500">Transaction Ref / Cheque No.</label>
+                                        <input id="txn-ref" type="text" placeholder="Optional" 
+                                               class="mt-1 w-full border border-slate-300 rounded-2xl px-3 py-2 text-sm">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 grid grid-cols-2 gap-3">
+                            <button onclick="registerLead(false)" id="register-btn-talks"
+                                    class="w-full bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold py-3.5 rounded-2xl flex items-center justify-center gap-x-2 text-sm disabled:opacity-50"
+                                    disabled>
+                                <i class="fa-solid fa-comments"></i>
+                                <span>Register (In Talks)</span>
+                            </button>
+                            
+                            <button onclick="registerLead(true)" id="register-btn"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 transition-colors text-white font-semibold py-3.5 rounded-2xl flex items-center justify-center gap-x-2 text-sm disabled:bg-slate-300 disabled:cursor-not-allowed"
+                                    disabled>
+                                <i class="fa-solid fa-lock"></i>
+                                <span>Record Token &amp; Register</span>
+                            </button>
+                        </div>
+                        
+                        <p class="text-center text-[10px] text-slate-400 mt-3">Rate &amp; unit locked immediately. No token required to register a lead.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MY PROFILE TAB -->
+        <div id="sales-profile-tab" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Profile Card -->
+                <div class="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-6">
+                    <div class="flex gap-4">
+                        <div class="w-16 h-16 bg-slate-200 rounded-2xl overflow-hidden flex-shrink-0">
+                            <img src="https://i.pravatar.cc/64?img=12" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-semibold text-2xl">Neo Sharma</div>
+                            <div class="text-emerald-600 text-sm font-medium flex items-center gap-x-1.5 mt-0.5">
+                                <i class="fa-solid fa-medal"></i> 
+                                <span>Silver Tier • 2,450 sqyd sold</span>
+                            </div>
+                            <div class="text-xs text-slate-500 mt-1">Last sale: <span class="font-medium">2 days ago</span></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <div class="text-xs text-slate-500">PHONE</div>
+                            <div class="font-medium">+91 98765 43210</div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-slate-500">EMAIL</div>
+                            <div class="font-medium">neo@sharma.in</div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-slate-500">RERA NO.</div>
+                            <div class="font-medium">UPRERA/BR/2024/88421</div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-slate-500">GSTIN</div>
+                            <div class="font-medium">09AABCT1234D1Z5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Referral Chain -->
+                <div class="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6">
+                    <div class="section-header mb-4">YOUR REFERRAL CHAIN</div>
+                    <div class="flex items-center gap-x-2 text-sm">
+                        <div class="px-4 py-2 bg-blue-50 text-blue-700 rounded-2xl font-medium">You (Level 0)</div>
+                        <i class="fa-solid fa-arrow-right text-slate-300"></i>
+                        <div class="px-4 py-2 bg-slate-100 rounded-2xl">Priya Sharma (Level 1)</div>
+                        <i class="fa-solid fa-arrow-right text-slate-300"></i>
+                        <div class="px-4 py-2 bg-slate-100 rounded-2xl">Amit Verma (Level 2)</div>
+                    </div>
+                    <div class="mt-3 text-xs text-slate-500">Incentives from downline sales are automatically calculated when sales close.</div>
+                </div>
+
+                <!-- Incentives Summary -->
+                <div class="lg:col-span-12 bg-white border border-slate-200 rounded-3xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="section-header">INCENTIVES EARNED</div>
+                        <button onclick="showIncentiveModal()" class="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 flex items-center gap-x-1.5">
+                            <i class="fa-solid fa-download text-xs"></i>
+                            <span>Download Statement</span>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 bg-slate-50 rounded-2xl">
+                            <div class="text-xs text-slate-500">FROM OWN SALES (THIS MONTH)</div>
+                            <div class="text-3xl font-semibold mt-1">₹1,24,500</div>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-2xl">
+                            <div class="text-xs text-slate-500">FROM DOWNLINE CHAIN</div>
+                            <div class="text-3xl font-semibold mt-1">₹48,200</div>
+                        </div>
+                        <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl">
+                            <div class="text-xs text-emerald-700">TOTAL EARNED</div>
+                            <div class="text-3xl font-semibold mt-1 text-emerald-700">₹1,72,700</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <div class="text-xs font-semibold text-slate-500 mb-2">RECENT CLOSED SALES</div>
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left border-b">
+                                    <th class="py-2 font-normal text-slate-500">Unit</th>
+                                    <th class="py-2 font-normal text-slate-500">Sale Value</th>
+                                    <th class="py-2 font-normal text-slate-500">Your Share</th>
+                                    <th class="py-2 font-normal text-slate-500">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-sales-table" class="text-sm">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- NEW: My Current Leads -->
+                <div class="lg:col-span-12 bg-white border border-slate-200 rounded-3xl p-6 mt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="section-header">MY CURRENT LEADS</div>
+                        <div class="text-xs px-3 py-1 bg-amber-100 text-amber-700 rounded-full font-medium" id="current-leads-count"></div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left border-b text-xs text-slate-500">
+                                    <th class="py-2 pr-4 font-medium">Customer</th>
+                                    <th class="py-2 pr-4 font-medium">Unit</th>
+                                    <th class="py-2 pr-4 font-medium">Status</th>
+                                    <th class="py-2 pr-4 font-medium text-right">Booking Amount</th>
+                                    <th class="py-2 font-medium">Registered</th>
+                                </tr>
+                            </thead>
+                            <tbody id="my-current-leads-table" class="divide-y text-sm">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- NEW: Past Closed Deals -->
+                <div class="lg:col-span-12 bg-white border border-slate-200 rounded-3xl p-6 mt-6">
+                    <div class="section-header mb-4">MY CLOSED DEALS</div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left border-b text-xs text-slate-500">
+                                    <th class="py-2 pr-4 font-medium">Customer</th>
+                                    <th class="py-2 pr-4 font-medium">Unit</th>
+                                    <th class="py-2 pr-4 font-medium text-right">Sale Value</th>
+                                    <th class="py-2 pr-4 font-medium">Status</th>
+                                    <th class="py-2 font-medium">Closed On</th>
+                                </tr>
+                            </thead>
+                            <tbody id="my-closed-deals-table" class="divide-y text-sm">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN VIEW -->
+    <div id="admin-view" class="max-w-screen-2xl mx-auto px-8 py-8 hidden">
+        <div class="flex items-end justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-semibold tracking-tight">Admin Dashboard</h1>
+                <p class="text-slate-500">Kanpur + Udaipur projects • 12 pending approvals</p>
+            </div>
+            
+            <div class="flex items-center gap-x-4 text-sm">
+                <div class="bg-white border px-4 h-10 flex items-center rounded-2xl gap-x-6 text-sm">
+                    <div><span class="font-semibold">87</span> <span class="text-slate-500">Active Bookings</span></div>
+                    <div><span class="font-semibold text-amber-600">12</span> <span class="text-slate-500">Pending</span></div>
+                    <div><span class="font-semibold">4,850</span> <span class="text-slate-500">sqyd sold</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Approvals -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-3 px-1">
+                <div class="font-semibold text-lg">Pending Approvals <span class="text-sm font-normal text-slate-400">(12)</span></div>
+            </div>
+            
+            <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden" id="pending-bookings-list">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Recently Closed -->
+        <div>
+            <div class="flex items-center justify-between mb-3 px-1">
+                <div class="font-semibold text-lg">Recently Closed (Last 7 days)</div>
+                <button onclick="showAllClosed()" class="text-xs px-3 py-1 bg-white border rounded-xl text-slate-500 hover:bg-slate-50">View all</button>
+            </div>
+            
+            <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-slate-50">
+                        <tr class="text-xs text-slate-500">
+                            <th class="text-left px-6 py-3 font-medium">Sales Partner</th>
+                            <th class="text-left px-6 py-3 font-medium">Unit</th>
+                            <th class="text-left px-6 py-3 font-medium">Customer</th>
+                            <th class="text-right px-6 py-3 font-medium">Sale Value</th>
+                            <th class="text-center px-6 py-3 font-medium">Status</th>
+                            <th class="text-center px-6 py-3 font-medium">Incentive</th>
+                        </tr>
+                    </thead>
+                    <tbody id="closed-bookings-table" class="text-sm divide-y">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-y-2"></div>
+
+    <script>
+        // ==================== STATE ====================
+        let currentRole = 'sales';
+        let selectedUnit = null;
+        let currentProjectIndex = 0;
+
+        // Sample Data
+        let projects = [
+            {
+                id: 1,
+                name: "Kanpur Gated Villas – Phase 1",
+                location: "Kanpur, UP",
+                units: [
+                    { id: 101, name: "Plot-101", size: 100, pricePerSqyd: 48000, status: "available" },
+                    { id: 102, name: "Plot-102", size: 100, pricePerSqyd: 48000, status: "available" },
+                    { id: 103, name: "Plot-103", size: 120, pricePerSqyd: 52000, status: "sold" },
+                    { id: 104, name: "Plot-104", size: 100, pricePerSqyd: 48500, status: "available" },
+                    { id: 105, name: "Plot-105", size: 110, pricePerSqyd: 49500, status: "available" },
+                ]
+            },
+            {
+                id: 2,
+                name: "Udaipur Luxury Resort – Phase 2",
+                location: "Udaipur, Rajasthan",
+                units: [
+                    { id: 201, name: "Villa-A1", size: 150, pricePerSqyd: 85000, status: "available" },
+                    { id: 202, name: "Villa-A2", size: 150, pricePerSqyd: 85000, status: "available" },
+                ]
+            }
+        ];
+
+        let pendingBookings = [];
+        let closedBookings = [
+            {
+                id: 1001,
+                unitName: "Plot-107",
+                salesPartner: "Priya Sharma",
+                customer: "Vikram Malhotra",
+                saleValue: 5200000,
+                status: "Full Paid",
+                incentiveCalculated: true,
+                approvedAt: "2026-02-08"
+            }
+        ];
+
+        // ==================== INITIALIZATION ====================
+        function init() {
+            // Load from localStorage if exists
+            const savedPending = localStorage.getItem('pendingBookings');
+            if (savedPending) pendingBookings = JSON.parse(savedPending);
+            
+            const savedClosed = localStorage.getItem('closedBookings');
+            if (savedClosed) closedBookings = JSON.parse(savedClosed);
+
+            renderUnits();
+            renderPendingBookings();
+            renderClosedBookings();
+            updateProfileRecentSales();
+            
+            // Default to Sales Partner view
+            switchRole('sales');
+            showSalesTab('register');
+            
+            // Pre-select first project
+            setTimeout(() => {
+                selectProject(0);
+            }, 300);
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('pendingBookings', JSON.stringify(pendingBookings));
+            localStorage.setItem('closedBookings', JSON.stringify(closedBookings));
+        }
+
+        // ==================== ROLE SWITCHING ====================
+        function switchRole(role) {
+            currentRole = role;
+            
+            const salesView = document.getElementById('sales-view');
+            const adminView = document.getElementById('admin-view');
+            const btnSales = document.getElementById('btn-sales');
+            const btnAdmin = document.getElementById('btn-admin');
+            
+            if (role === 'sales') {
+                salesView.classList.remove('hidden');
+                adminView.classList.add('hidden');
+                btnSales.classList.add('nav-active');
+                btnAdmin.classList.remove('nav-active');
+                document.getElementById('user-role').innerText = 'Sales Partner • Silver Tier';
+            } else {
+                salesView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                btnSales.classList.remove('nav-active');
+                btnAdmin.classList.add('nav-active');
+                document.getElementById('user-role').innerText = 'Admin • Full Access';
+                renderPendingBookings();
+                renderClosedBookings();
+            }
+        }
+
+        function showSalesTab(tab) {
+            const registerTab = document.getElementById('sales-register-tab');
+            const profileTab = document.getElementById('sales-profile-tab');
+            const tabRegister = document.getElementById('tab-register');
+            const tabProfile = document.getElementById('tab-profile');
+
+            if (tab === 'register') {
+                registerTab.classList.remove('hidden');
+                profileTab.classList.add('hidden');
+                tabRegister.classList.add('border-b-2', 'border-blue-600', 'text-blue-600');
+                tabProfile.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600');
+                tabProfile.classList.add('text-slate-500');
+            } else {
+                registerTab.classList.add('hidden');
+                profileTab.classList.remove('hidden');
+                tabProfile.classList.add('border-b-2', 'border-blue-600', 'text-blue-600');
+                tabRegister.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600');
+                tabRegister.classList.add('text-slate-500');
+                updateProfileRecentSales(); // This now also renders Current Leads + Closed Deals
+            }
+        }
+
+        // ==================== PROJECT & UNIT SELECTION ====================
+        function selectProject(projectIndex) {
+            currentProjectIndex = projectIndex;
+            renderUnits();
+            
+            // Clear previous selection
+            selectedUnit = null;
+            document.getElementById('selected-unit-panel').classList.add('hidden');
+            document.getElementById('rate-panel').classList.add('hidden');
+            document.getElementById('payment-section').classList.add('hidden');
+            document.getElementById('register-btn').disabled = true;
+        }
+
+        function renderUnits() {
+            const container = document.getElementById('units-grid');
+            container.innerHTML = '';
+            
+            const project = projects[currentProjectIndex];
+            
+            project.units.forEach(unit => {
+                const isUnavailable = unit.status === 'sold' || unit.status === 'reserved';
+                const isSelected = selectedUnit && selectedUnit.id === unit.id;
+                
+                const card = document.createElement('div');
+                card.className = `unit-card bg-white border ${isSelected ? 'border-blue-500 selected' : 'border-slate-200'} rounded-2xl p-4 ${isUnavailable ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`;
+                
+                let statusBadge = '';
+                if (unit.status === 'sold') {
+                    statusBadge = `<span class="px-2.5 py-0.5 text-xs font-semibold bg-red-100 text-red-600 rounded">SOLD</span>`;
+                } else if (unit.status === 'reserved') {
+                    statusBadge = `<span class="px-2.5 py-0.5 text-xs font-semibold bg-amber-100 text-amber-700 rounded">RESERVED</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-600 rounded">Available</span>`;
+                }
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="font-semibold">${unit.name}</div>
+                            <div class="text-sm text-slate-500">${unit.size} sqyd</div>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    <div class="mt-3">
+                        <div class="text-xs text-slate-400">Rate / sqyd</div>
+                        <div class="font-semibold">₹${unit.pricePerSqyd.toLocaleString('en-IN')}</div>
+                    </div>
+                `;
+                
+                if (!isUnavailable) {
+                    card.onclick = () => selectUnit(unit);
+                }
+                
+                container.appendChild(card);
+            });
+        }
+
+        function selectUnit(unit) {
+            // Double-check availability (in case status changed)
+            if (unit.status === 'sold' || unit.status === 'reserved') {
+                showToast("This unit is no longer available.", "error");
+                renderUnits();
+                return;
+            }
+            
+            selectedUnit = unit;
+            
+            // Highlight selected card
+            renderUnits();
+            
+            // Show details panel
+            const panel = document.getElementById('selected-unit-panel');
+            panel.classList.remove('hidden');
+            
+            document.getElementById('selected-unit-name').innerText = unit.name;
+            document.getElementById('selected-unit-size').innerText = `${unit.size} sqyd • ${projects[currentProjectIndex].name}`;
+            
+            // Show rate panel
+            const ratePanel = document.getElementById('rate-panel');
+            ratePanel.classList.remove('hidden');
+            
+            const totalValue = unit.size * unit.pricePerSqyd;
+            const defaultBookingAmount = Math.round(totalValue * 0.10);
+            
+            document.getElementById('rate-value').innerHTML = `₹${unit.pricePerSqyd.toLocaleString('en-IN')} <span class="text-xs font-normal">/sqyd</span>`;
+            document.getElementById('total-value').innerText = `₹${totalValue.toLocaleString('en-IN')}`;
+            
+            // Show booking amount section with default
+            document.getElementById('booking-amount-section').classList.remove('hidden');
+            const bookingInput = document.getElementById('booking-amount-input');
+            bookingInput.value = defaultBookingAmount;
+            bookingInput.dataset.defaultValue = defaultBookingAmount;
+            
+            // Show payment section (optional)
+            document.getElementById('payment-section').classList.remove('hidden');
+            
+            // Enable both register buttons
+            document.getElementById('register-btn').disabled = false;
+            document.getElementById('register-btn-talks').disabled = false;
+        }
+
+        // ==================== REGISTER LEAD (Updated) ====================
+        function registerLead(hasToken = false) {
+            if (!selectedUnit) {
+                showToast("Please select a unit first", "error");
+                return;
+            }
+            
+            // Safety check: prevent double booking
+            if (selectedUnit.status === 'sold' || selectedUnit.status === 'reserved') {
+                showToast("This unit has already been reserved or sold.", "error");
+                renderUnits();
+                return;
+            }
+            
+            const name = document.getElementById('customer-name').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
+            
+            if (!name || !phone) {
+                showToast("Please enter customer name and phone number", "error");
+                return;
+            }
+            
+            // Duplicate check
+            const isDuplicate = pendingBookings.some(b => 
+                b.customerPhone === phone && 
+                b.projectId === projects[currentProjectIndex].id &&
+                !['cancelled'].includes(b.status)
+            );
+            
+            if (isDuplicate) {
+                showToast("This customer phone is already registered for this project!", "error");
+                return;
+            }
+            
+            const totalValue = selectedUnit.size * selectedUnit.pricePerSqyd;
+            
+            // Get custom booking amount (or default to 10%)
+            const bookingInput = document.getElementById('booking-amount-input');
+            let bookingAmount = parseFloat(bookingInput.value);
+            if (!bookingAmount || bookingAmount <= 0) {
+                bookingAmount = Math.round(totalValue * 0.10);
+            }
+            
+            const txnType = document.getElementById('txn-type').value;
+            const txnRef = document.getElementById('txn-ref').value.trim();
+            
+            // Use the custom booking amount as the paid amount when recording token
+            const bookingInputVal = parseFloat(document.getElementById('booking-amount-input').value) || bookingAmount;
+            
+            // Determine status
+            let status = 'In Talks';
+            let finalAmountPaid = 0;
+            
+            if (hasToken) {
+                status = 'Token Paid';
+                finalAmountPaid = bookingInputVal;
+            }
+            
+            const newBooking = {
+                id: Date.now(),
+                projectId: projects[currentProjectIndex].id,
+                projectName: projects[currentProjectIndex].name,
+                unitId: selectedUnit.id,
+                unitName: selectedUnit.name,
+                unitSize: selectedUnit.size,
+                lockedRate: selectedUnit.pricePerSqyd,
+                totalValue: totalValue,
+                customerName: name,
+                customerPhone: phone,
+                customerId: `CUST-KNP-${Date.now().toString().slice(-6)}`,
+                bookingAmount: bookingAmount,
+                txnType: hasToken ? txnType : null,
+                txnRef: hasToken ? (txnRef || 'N/A') : null,
+                amountPaid: finalAmountPaid,
+                status: status,
+                salesPartner: "Neo Sharma",
+                createdAt: new Date().toISOString(),
+                adminApproved: false
+            };
+            
+            pendingBookings.unshift(newBooking);
+            saveToLocalStorage();
+            
+            // Mark unit as reserved
+            const project = projects[currentProjectIndex];
+            const unitIndex = project.units.findIndex(u => u.id === selectedUnit.id);
+            if (unitIndex !== -1) {
+                project.units[unitIndex].status = 'reserved';
+            }
+            
+            // Refresh units list
+            renderUnits();
+            
+            // Show beautiful success modal
+            showRegistrationSuccessModal(newBooking);
+            
+            // Reset form fields
+            document.getElementById('customer-name').value = '';
+            document.getElementById('customer-phone').value = '';
+            document.getElementById('txn-ref').value = '';
+            document.getElementById('booking-amount-input').value = '';
+            
+            // Clear selection
+            selectedUnit = null;
+            document.getElementById('selected-unit-panel').classList.add('hidden');
+            document.getElementById('rate-panel').classList.add('hidden');
+            document.getElementById('booking-amount-section').classList.add('hidden');
+            document.getElementById('payment-section').classList.add('hidden');
+            document.getElementById('register-btn').disabled = true;
+            document.getElementById('register-btn-talks').disabled = true;
+            
+            // Refresh admin view if open
+            if (!document.getElementById('admin-view').classList.contains('hidden')) {
+                renderPendingBookings();
+            }
+        }
+        
+        function resetToTenPercent() {
+            const input = document.getElementById('booking-amount-input');
+            if (input && input.dataset.defaultValue) {
+                input.value = input.dataset.defaultValue;
+            }
+        }
+        
+        function showRegistrationSuccessModal(booking) {
+            const modalHTML = `
+                <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-[200]" onclick="this.remove()">
+                    <div onclick="event.stopImmediatePropagation()" class="bg-white w-full max-w-md mx-4 rounded-3xl shadow-2xl overflow-hidden">
+                        <!-- Success Header -->
+                        <div class="bg-emerald-600 px-6 py-8 text-white text-center">
+                            <div class="mx-auto w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4">
+                                <i class="fa-solid fa-check-circle text-4xl"></i>
+                            </div>
+                            <div class="text-2xl font-semibold tracking-tight">Lead Registered Successfully</div>
+                            <div class="text-emerald-100 mt-1 text-sm">Unit &amp; rate are now locked for this customer</div>
+                        </div>
+                        
+                        <div class="p-6 space-y-5">
+                            <div>
+                                <div class="text-xs uppercase tracking-wider text-slate-500 mb-1">Customer ID</div>
+                                <div class="font-mono text-lg font-semibold">${booking.customerId}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-y-4 text-sm">
+                                <div>
+                                    <div class="text-xs text-slate-500">Customer</div>
+                                    <div class="font-medium">${booking.customerName}</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-500">Phone</div>
+                                    <div class="font-medium">${booking.customerPhone}</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-500">Unit Locked</div>
+                                    <div class="font-semibold">${booking.unitName} (${booking.unitSize} sqyd)</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-500">Locked Rate</div>
+                                    <div class="font-semibold">₹${booking.lockedRate.toLocaleString('en-IN')}/sqyd</div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-600">Total Sale Value</span>
+                                    <span class="font-semibold">₹${booking.totalValue.toLocaleString('en-IN')}</span>
+                                </div>
+                                <div class="flex justify-between text-sm mt-1">
+                                    <span class="text-slate-600">Booking Amount</span>
+                                    <span class="font-semibold text-emerald-600">₹${booking.bookingAmount.toLocaleString('en-IN')}</span>
+                                </div>
+                                <div class="mt-3 pt-3 border-t flex justify-between items-center">
+                                    <span class="text-xs font-medium">Current Status</span>
+                                    <span class="status-pill ${booking.status === 'Token Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${booking.status}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="px-6 py-5 bg-slate-50 flex gap-x-3">
+                            <button onclick="this.closest('.fixed').remove(); showSalesTab('profile');" 
+                                    class="flex-1 py-3 text-sm font-semibold border border-slate-300 rounded-2xl hover:bg-white transition-colors">
+                                View in My Leads
+                            </button>
+                            <button onclick="this.closest('.fixed').remove()" 
+                                    class="flex-1 py-3 text-sm font-semibold bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-colors">
+                                Register Another Lead
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // ==================== ADMIN: PENDING BOOKINGS ====================
+        function renderPendingBookings() {
+            const container = document.getElementById('pending-bookings-list');
+            container.innerHTML = '';
+            
+            const pending = pendingBookings.filter(b => !b.adminApproved);
+            
+            if (pending.length === 0) {
+                container.innerHTML = `
+                    <div class="px-8 py-12 text-center text-slate-400">
+                        <i class="fa-solid fa-check-circle text-3xl mb-3"></i>
+                        <div>No pending approvals</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            pending.forEach(booking => {
+                const div = document.createElement('div');
+                div.className = `px-6 py-5 border-b last:border-b-0 flex items-center justify-between hover:bg-slate-50 transition-colors`;
+                
+                div.innerHTML = `
+                    <div class="flex-1 min-w-0 pr-6">
+                        <div class="flex items-center gap-x-3">
+                            <div>
+                                <div class="font-semibold">${booking.customerName}</div>
+                                <div class="text-xs text-slate-500">${booking.customerPhone} • ${booking.customerId}</div>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-sm">
+                            <span class="font-medium">${booking.unitName}</span> 
+                            <span class="text-slate-400">•</span> 
+                            <span class="text-slate-500">${booking.projectName}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-x-8 text-sm">
+                        <div class="text-right">
+                            <div class="text-xs text-slate-500">Locked Rate</div>
+                            <div class="font-semibold">₹${booking.lockedRate.toLocaleString('en-IN')}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-slate-500">Total Value</div>
+                            <div class="font-semibold">₹${booking.totalValue.toLocaleString('en-IN')}</div>
+                        </div>
+                        <div>
+                            <span class="status-pill bg-amber-100 text-amber-700">${booking.status}</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-x-2">
+                            <button onclick="viewBookingDetails(${booking.id})" 
+                                    class="px-4 py-2 text-xs font-medium border border-slate-300 rounded-xl hover:bg-white transition-colors">
+                                View Details
+                            </button>
+                            <button onclick="approveBooking(${booking.id}, this)" 
+                                    class="px-5 py-2 text-xs font-semibold bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-x-1.5">
+                                <i class="fa-solid fa-check"></i>
+                                <span>Approve</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function viewBookingDetails(bookingId) {
+            const booking = pendingBookings.find(b => b.id === bookingId);
+            if (!booking) return;
+            
+            const modalHTML = `
+                <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-[100]" onclick="this.remove()">
+                    <div onclick="event.stopImmediatePropagation()" class="bg-white w-full max-w-lg mx-4 rounded-3xl shadow-xl overflow-hidden">
+                        <div class="px-6 py-5 border-b flex items-center justify-between">
+                            <div class="font-semibold text-lg">Booking Details</div>
+                            <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-slate-600">
+                                <i class="fa-solid fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="p-6 space-y-5 text-sm">
+                            <div class="grid grid-cols-2 gap-y-4">
+                                <div><span class="text-slate-500">Customer</span><br><span class="font-medium">${booking.customerName}</span></div>
+                                <div><span class="text-slate-500">Phone</span><br><span class="font-medium">${booking.customerPhone}</span></div>
+                                <div><span class="text-slate-500">Unit</span><br><span class="font-medium">${booking.unitName} (${booking.unitSize} sqyd)</span></div>
+                                <div><span class="text-slate-500">Project</span><br><span class="font-medium">${booking.projectName}</span></div>
+                            </div>
+                            
+                            <div class="pt-4 border-t">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-500">Locked Rate</span>
+                                    <span class="font-semibold">₹${booking.lockedRate.toLocaleString('en-IN')} / sqyd</span>
+                                </div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-500">Total Sale Value</span>
+                                    <span class="font-semibold">₹${booking.totalValue.toLocaleString('en-IN')}</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-emerald-600 font-medium">Booking Amount (10%)</span>
+                                    <span class="font-bold text-emerald-600">₹${booking.bookingAmount.toLocaleString('en-IN')}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-4 border-t text-xs text-slate-500">
+                                Registered by <span class="font-medium text-slate-700">${booking.salesPartner}</span> • 
+                                ${new Date(booking.createdAt).toLocaleDateString()}
+                            </div>
+                        </div>
+                        
+                        <div class="px-6 py-4 bg-slate-50 flex justify-end gap-x-3">
+                            <button onclick="this.closest('.fixed').remove()" class="px-5 py-2 text-sm font-medium border rounded-2xl">Close</button>
+                            <button onclick="approveBooking(${booking.id}, this); this.closest('.fixed').remove()" 
+                                    class="px-6 py-2 text-sm font-semibold bg-emerald-600 text-white rounded-2xl flex items-center gap-x-2">
+                                <i class="fa-solid fa-check-double"></i>
+                                <span>Approve &amp; Confirm Booking</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        function approveBooking(bookingId, buttonElement) {
+            const index = pendingBookings.findIndex(b => b.id === bookingId);
+            if (index === -1) return;
+            
+            const booking = pendingBookings[index];
+            booking.adminApproved = true;
+            booking.status = "Full Paid";
+            booking.approvedAt = new Date().toISOString();
+            
+            // Move to closed
+            closedBookings.unshift(booking);
+            pendingBookings.splice(index, 1);
+            
+            saveToLocalStorage();
+            
+            // Update UI
+            if (buttonElement) buttonElement.closest('.fixed')?.remove();
+            
+            renderPendingBookings();
+            renderClosedBookings();
+            updateProfileRecentSales();
+            
+            showToast(`Booking approved! Incentives will be calculated for the full chain.`, "success");
+            
+            // Simulate incentive calculation toast after delay
+            setTimeout(() => {
+                showToast(`Incentive calculation triggered for ${booking.unitName} (₹${Math.round(booking.totalValue * 0.039).toLocaleString('en-IN')} total distributed)`, "success");
+            }, 1800);
+        }
+
+        function renderClosedBookings() {
+            const tbody = document.getElementById('closed-bookings-table');
+            tbody.innerHTML = '';
+            
+            const recent = closedBookings.slice(0, 5);
+            
+            recent.forEach(booking => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-50';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-3.5 font-medium">${booking.salesPartner}</td>
+                    <td class="px-6 py-3.5">${booking.unitName}</td>
+                    <td class="px-6 py-3.5 text-slate-600">${booking.customerName}</td>
+                    <td class="px-6 py-3.5 text-right font-medium">₹${booking.totalValue.toLocaleString('en-IN')}</td>
+                    <td class="px-6 py-3.5 text-center">
+                        <span class="status-pill bg-emerald-100 text-emerald-700">${booking.status}</span>
+                    </td>
+                    <td class="px-6 py-3.5 text-center">
+                        ${booking.incentiveCalculated ? 
+                            `<span class="text-emerald-600 text-xs font-medium">Calculated</span>` : 
+                            `<span class="text-amber-600 text-xs">Pending</span>`
+                        }
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateProfileRecentSales() {
+            const tbody = document.getElementById('recent-sales-table');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            const myClosed = closedBookings.filter(b => b.salesPartner === "Neo Sharma").slice(0, 3);
+            
+            if (myClosed.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="4" class="py-4 text-center text-xs text-slate-400">No closed sales yet in this view.</td>`;
+                tbody.appendChild(row);
+            } else {
+                myClosed.forEach(booking => {
+                    const row = document.createElement('tr');
+                    const share = Math.round(booking.totalValue * 0.025);
+                    
+                    row.innerHTML = `
+                        <td class="py-2 pr-4 font-medium">${booking.unitName}</td>
+                        <td class="py-2 pr-4">₹${booking.totalValue.toLocaleString('en-IN')}</td>
+                        <td class="py-2 pr-4 font-medium text-emerald-600">₹${share.toLocaleString('en-IN')}</td>
+                        <td class="py-2">
+                            <span class="text-xs px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-700">Paid</span>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+            
+            // Also render the new sections
+            renderMyCurrentLeads();
+            renderMyClosedDeals();
+        }
+        
+        function renderMyCurrentLeads() {
+            const tbody = document.getElementById('my-current-leads-table');
+            const countEl = document.getElementById('current-leads-count');
+            if (!tbody || !countEl) return;
+            
+            tbody.innerHTML = '';
+            
+            const myLeads = pendingBookings.filter(b => b.salesPartner === "Neo Sharma");
+            countEl.innerText = `${myLeads.length} Active`;
+            
+            if (myLeads.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5" class="py-6 text-center text-xs text-slate-400">No active leads at the moment.</td>`;
+                tbody.appendChild(row);
+                return;
+            }
+            
+            myLeads.forEach(lead => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-3 pr-4">
+                        <div class="font-medium">${lead.customerName}</div>
+                        <div class="text-xs text-slate-500">${lead.customerPhone}</div>
+                    </td>
+                    <td class="py-3 pr-4 font-medium">${lead.unitName}</td>
+                    <td class="py-3 pr-4">
+                        <span class="status-pill ${lead.status === 'Token Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${lead.status}</span>
+                    </td>
+                    <td class="py-3 pr-4 text-right font-medium">₹${lead.bookingAmount.toLocaleString('en-IN')}</td>
+                    <td class="py-3 text-xs text-slate-500">${new Date(lead.createdAt).toLocaleDateString('en-IN', {day:'numeric', month:'short'})}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function renderMyClosedDeals() {
+            const tbody = document.getElementById('my-closed-deals-table');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            const myClosed = closedBookings.filter(b => b.salesPartner === "Neo Sharma");
+            
+            if (myClosed.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5" class="py-6 text-center text-xs text-slate-400">No closed deals yet.</td>`;
+                tbody.appendChild(row);
+                return;
+            }
+            
+            myClosed.forEach(deal => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-3 pr-4">
+                        <div class="font-medium">${deal.customerName}</div>
+                    </td>
+                    <td class="py-3 pr-4 font-medium">${deal.unitName}</td>
+                    <td class="py-3 pr-4 text-right font-semibold">₹${deal.totalValue.toLocaleString('en-IN')}</td>
+                    <td class="py-3 pr-4">
+                        <span class="status-pill bg-emerald-100 text-emerald-700">${deal.status}</span>
+                    </td>
+                    <td class="py-3 text-xs text-slate-500">${deal.approvedAt ? new Date(deal.approvedAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}) : '-'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function showIncentiveModal() {
+            const modal = document.createElement('div');
+            modal.className = `fixed inset-0 bg-black/40 flex items-center justify-center z-[100]`;
+            modal.innerHTML = `
+                <div onclick="event.target.remove()" class="bg-white w-full max-w-md mx-4 rounded-3xl overflow-hidden shadow-xl">
+                    <div class="px-6 py-5 border-b">
+                        <div class="font-semibold">Incentive Statement</div>
+                        <div class="text-xs text-slate-500">February 2026 • Neo Sharma</div>
+                    </div>
+                    <div class="p-6 text-sm space-y-4">
+                        <div class="flex justify-between"><span>Direct Brokerage (2.5%)</span> <span class="font-semibold">₹1,24,500</span></div>
+                        <div class="flex justify-between"><span>Network Layer (65%)</span> <span class="font-semibold">₹32,400</span></div>
+                        <div class="flex justify-between"><span>Rank Layer (35%)</span> <span class="font-semibold">₹15,800</span></div>
+                        <div class="pt-3 border-t flex justify-between font-semibold"><span>Total Credited</span> <span class="text-emerald-600">₹1,72,700</span></div>
+                    </div>
+                    <div class="px-6 py-4 bg-slate-50 text-xs text-center text-slate-500">
+                        Full breakdown available in downloadable PDF
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function showAllClosed() {
+            alert("In a real app this would open a full report page with filters and export options.");
+        }
+
+        // ==================== UTILITIES ====================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast max-w-xs px-5 py-3 rounded-2xl shadow-lg flex items-start gap-x-3 text-sm ${
+                type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
+            }`;
+            
+            toast.innerHTML = `
+                <div class="mt-0.5">
+                    <i class="fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                </div>
+                <div class="flex-1">${message}</div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.transition = 'all 0.3s ease';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 4200);
+        }
+
+        function logout() {
+            if (confirm('Exit wireframe?')) {
+                window.location.reload();
+            }
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "?" && document.activeElement.tagName === "BODY") {
+                e.preventDefault();
+                const salesTab = document.getElementById('sales-register-tab');
+                if (!salesTab.classList.contains('hidden')) {
+                    document.getElementById('customer-name').focus();
+                }
+            }
+        });
+
+        // Boot app
+        window.onload = function() {
+            init();
+            
+            // Easter egg: Press "?" to focus customer name field
+            console.log('%c[Wireframe] Press "?" to quickly focus customer name field', 'color:#64748b');
+        }
+    </script>
+</body>
+</html>
